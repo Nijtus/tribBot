@@ -1,0 +1,52 @@
+{
+     "280062938776338432": {
+          "nom": "Kaisel",
+          "espece": "Dragon ombre",
+          "capacite": [
+               [
+                    "vol",
+                    "2"
+               ],
+               [
+                    "intimidation",
+                    "2"
+               ],
+               [
+                    "combat",
+                    "1"
+               ]
+          ]
+     },
+     "408680557807927296": {
+          "nom": "Sky",
+          "espece": "renard",
+          "capacite": [
+               [
+                    "combat",
+                    "2"
+               ],
+               [
+                    "athletisme",
+                    "2"
+               ],
+               [
+                    "chasse",
+                    "1"
+               ]
+          ]
+     },
+     "387998912558137344": {
+          "nom": "Nijtus",
+          "espece": "Oiseau",
+          "capacite": [
+               [
+                    "medecine",
+                    "3"
+               ],
+               [
+                    "construction",
+                    "2"
+               ]
+          ]
+     }
+}

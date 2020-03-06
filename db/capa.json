@@ -1,0 +1,15 @@
+[
+  ["athletisme","Permet de déplacer des objet lourd et permet de courir vite et longtemps"],
+  ["artisanat","Permet de créer des objet du quotidient et des armes"],
+  ["chasse","Permet de ramener plus de nouriture en chassant"],
+  ["combat","Permet de mieux ce defendre en combat"],
+  ["construction","Permet de construire des habitats ou de larges structures"],
+  ["discrétion","Permet de ne pas ce faire reperer"],
+  ["escalade","Permet d'escalader plus facilement"],
+  ["intimidation","Permet de mettre une pression psychologique"],
+  ["medecine","Permet de soigner des blessures et des maladies"],
+  ["nage","Permet de nager plus vite et plus longtemps"],
+  ["orientation","Permet de se reperer"],
+  ["récolte","Permet de recolter plus de plante et de les conserver plus longtemps"],
+  ["vol","Permet de voler plus vite et plus longtemps"]
+]
