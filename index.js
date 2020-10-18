@@ -202,7 +202,7 @@ function afficherTerrain(id){
 	let retour = terrain[id]["Description"]+"\n"
 	retour += "Bonus:"+"\n"
 	retour += "   Force: "+ terrain[id]["Force"]+"\n"
-	retour += "   Agilitée: "+ terrain[id]["Agilitee"]+"\n"
+	retour += "   Agilitée: "+ terrain[id]["Agilite"]+"\n"
 	retour += "   Mental: "+ terrain[id]["Mental"]+"\n"
 
 	return retour;
