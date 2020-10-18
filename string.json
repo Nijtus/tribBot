@@ -12,6 +12,7 @@
   "reussite":" C'est un succès",
   "gagnant":"C'est ${0} qui prend l'anvantage malgré ces blessures ! ${1} est grièvement blessé !",
   "cbt":"Combat enregistré !",
+  "etatfaible":"Vous etes trop blessé pour pouvoir vous battre !",
   "help":{
     "general":[
       "!personnage [option]: permet de gérer sont personnage et de voir ceux des autres",

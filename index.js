@@ -106,8 +106,8 @@ client.on('message',function(message){
 				message.channel.send(strings["error"]["mentionInvalide"])
 			} else if (terrain[message.channel.id] ===undefined){
 				message.channel.send(strings["error"]["cbtimpossibeTerrain"])
-			}else if (message.author.id == tmp) {
-				message.channel.send(strings["error"]["cbtImpossibleSoiMeme"])
+			}else if (perso[message.author.id]["pv"]<=2) {
+				message.channel.send(strings["etatfaible"])
 			}else if (combat[message.author.id+message.channel.id] !== undefined) {
 
 				let atck = combat[message.author.id+message.channel.id][0];
