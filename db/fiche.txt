@@ -1,0 +1,16 @@
+Il vous faut utiliser la fiche personnage que voici ^w^ (faites un copier-coller)
+Attention, les stats Force, Agilitée et Mental représente vos capacités dans ces dommaines. Il y a 15 points a répartir.
+```
+!personnage
+<Nom>
+<Age>
+<Sexe>
+<Espece>
+<Orientation>
+<Description Physique>
+<Description Mental>
+<Autre>
+<Force>
+<Agilite>
+<Mental>
+```

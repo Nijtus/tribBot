@@ -1,100 +1,142 @@
 const { Client, Attachment } = require('discord.js');
-let request = require(`request`);
+
 let fs = require(`fs`);
+let schedule = require(`node-schedule`);
 var jsonFormat = require('./');
 
 const client = new Client();
-var dialogue = {}
+
 var perso= {}
 var voeux = {}
+var combat = {}
+const limitePoints = 15
 
 token = fs.readFileSync("db/token.txt", 'utf8');
 token = token.split('\n')
 
+fiche = fs.readFileSync("db/fiche.txt", 'utf8');
+
 strings = fs.readFileSync("string.json", 'utf8');
 strings = JSON.parse(strings)
-
-capa = fs.readFileSync("db/capa.json", 'utf8');
-capa = JSON.parse(capa)
 
 perso = fs.readFileSync("db/perso.json", 'utf8');
 perso = JSON.parse(perso)
 
-voeux = fs.readFileSync("db/voeux.json", 'utf8');
-voeux = JSON.parse(voeux)
+terrain = fs.readFileSync("db/terrain.json", 'utf8');
+terrain = JSON.parse(terrain)
 
-// var roles = {
-// 	"sansClan":"684745455590178877",
-// 	"astral":"684748786056298532"
-// }
+modo = fs.readFileSync("db/modo.json", 'utf8');
+modo = JSON.parse(modo)
+
+var roles = {}
+var j =null
+
+var ficheValidation = null ;
+var guild = null
 
 client.on('ready',function (){
 	console.log(strings["pret"]);
-	// var guild = client.guilds.resolve('684734450558435370');
-	// console.log(guild.members.cache.get('684769182205739028').addRole(guild.roles.resolve('684745455590178877')));
- 	// console.log(guild.members.resolve('387998912558137344')))
-	// .user.addRole(
-	// console.log(guild.roles.resolve('684745455590178877'));
+	setTimeout(function(){ // in leftToEight() milliseconds run this:
+        resetJournalier() // send the message once
+        var dayMillseconds = 1000 * 60 * 60 * 24;
+        setInterval(function(){ // repeat this every 24 hours
+					resetJournalier()
+        }, dayMillseconds)
+    }, leftToEight())
+
+	guild  = client.guilds.cache.get("570999527507755018")
+	ficheValidation = guild.channels.cache.get("766586088327348256")
+	roles["RP"] = guild.roles.cache.get("766584856351735808")
+
 });
 
 client.on('message',function(message){
 	if(message.author.id != "684769182205739028"){
-
 		lignes = message.content.split("\n")
 		spl = []
 		for (var x in lignes) {
 			spl.push(lignes[x].split(' '))
 		}
 
+		if (spl[0][0]=="!validation" && estModo(message.author.id)) {
 
-		if(spl[0][0]=="!utilise"){
-			if (perso[message.author.id] === undefined) {
-				message.channel.send(strings["error"]["vousPasDePerso"])
-			}else if (spl[0][1] === undefined || isNaN(spl[0][1])) {
-				message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["utilise"])
-			}else if(spl[0][2] === undefined){
-				message.channel.send(dee(5+Number(spl[0][1])))
-			}else{
-				var trouver = false
-				for (var x in perso[message.author.id]["capacite"]  ) {
-					if (perso[message.author.id]["capacite"][x][0]== spl[0][2]) {
-						trouver = true
-						message.channel.send(dee(5+Number(spl[0][1])+Number(perso[message.author.id]["capacite"][x][1])))
-					}
-				}
-				if (!trouver){
-					message.channel.send(strings["error"]["capaNonTrouver"])
-				}
+			if(spl[0][1]=== undefined){
+				message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["validation"])
+			}else if (perso[spl[0][1]]===undefined) {
+				message.channel.send(strings["error"]["pasDePerso"].replace("${0}",spl[0][1]))
+			}else if (perso[spl[0][1]]["validation"]) {
+				message.channel.send(strings["error"]["dejaValidee"])
+			}else {
+				perso[spl[0][1]]["validation"] = true
+				guild.members.cache.get(spl[0][1]).roles.add(roles["RP"])
+				message.channel.send(strings["persoValid"])
+				sauvgarde(perso,"perso")
 			}
-		}else if(spl[0][0]=="!personnage" ){
-			if (spl[0][1]=="init"){
-				if (perso[message.author.id] !== undefined) {
-					message.channel.send(strings["error"]["personnageExistant"])
+
+
+
+		}else if (spl[0][0]=="!terrain") {
+			if(spl[0][1]===undefined || !estModo(message.author.id)){
+				if(terrain[message.channel.id]===undefined){
+					message.channel.send(strings["error"]["pasUnTerrain"])
 				}else{
-					dialogue[message.author.id] = {"etape":0}
-					createPersonnage(message);
+					message.channel.send(afficherTerrain(message.channel.id))
+				}
+			}else{
+				let nouv = {}
+				nouv["Force"] = Number(spl[0][1])
+				nouv["Agilite"] = Number(spl[0][2])
+				nouv["Mental"] = Number(spl[0][3])
+				nouv["Description"] = lignes[1]
+				terrain[message.channel.id] = nouv
+				sauvgarde(terrain,"terrain")
+				message.channel.send(strings["enregistrementRT"])
+			}
+
+		}else if(spl[0][0]=="!combat"){
+			var tmp = null
+			var compte = 0
+			for (const [key, value] of message.mentions.members) {
+				tmp = key
+				compte++
+			}
+			if (spl[0][1] === undefined || (spl[0][1] != "for" && spl[0][1] != "agl" && spl[0][1]  != "mtl")){
+				message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["combat"])
+			} else if (compte != 1 ){
+				message.channel.send(strings["error"]["mentionInvalide"])
+			} else if (terrain[message.channel.id] ===undefined){
+				message.channel.send(strings["error"]["cbtimpossibeTerrain"])
+			}else if (message.author.id == tmp) {
+				message.channel.send(strings["error"]["cbtImpossibleSoiMeme"])
+			}else if (combat[message.author.id+message.channel.id] !== undefined) {
+
+				let atck = combat[message.author.id+message.channel.id][0];
+				let deff = message.author.id;
+
+				if (tmp == atck) {
+					let caracD = resolveCarac(spl[0][1])
+					let caracA = resolveCarac(combat[message.author.id+message.channel.id][1])
+
+					let damageDeff = perso[deff][caracD] + terrain[message.channel.id][caracD] + quatreDees()
+					let damageAtck = perso[atck][caracA] + terrain[message.channel.id][caracA] + quatreDees()
+
+					if (damageAtck>damageDeff){
+						perso[deff]["pv"]-=2
+						perso[atck]["pv"]--
+						message.channel.send(strings["gagnant"].replace("${0}",perso[atck]['Nom']).replace("${1}",perso[deff]['Nom']))
+					}else {
+						perso[deff]["pv"]--
+						perso[atck]["pv"]-=2
+						message.channel.send(strings["gagnant"].replace("${0}",perso[deff]['Nom']).replace("${1}",perso[atck]['Nom']))
+					}
+					sauvgarde(perso,"perso")
+
+					delete combat[message.author.id+message.channel.id];
 				}
 
-			}else if (spl[0][1]=="modif"){
-				if (spl[0][3] === undefined || spl[0][2] === undefined || (spl[0][2] != "nom" && spl[0][2] != "espece")){
-					message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["persoModif"])
-				}else{
-					perso[message.author.id][spl[0][2]] = spl[0][3]
-					sauvgarde(perso,"perso");
-					message.channel.send(strings["persoModifReussi"])
-				}
-			}else if (message.mentions.members.first() !==undefined){
-				if(perso[message.mentions.members.first().id] !==undefined){
-					tmp =perso[message.mentions.members.first().id]
-					var retour = strings["persoFormat"].replace('${0}',tmp['nom']).replace("${1}",tmp["espece"])
-					for (var x in tmp["capacite"]) {
-						retour += "		"+tmp["capacite"][x][0]+": "+tmp["capacite"][x][1]+"\n"
-					}
-					retour += "```"
-					message.channel.send(retour)
-				}else{
-					message.channel.send(strings["error"]["pasDePerso"].replace("${0}",message.mentions.members.first().toString()))
-				}
+			}else{
+				combat[tmp+message.channel.id] = [message.author.id,spl[0][1]]
+				message.channel.send(strings["cbt"])
 			}
 
 		}else if (spl[0][0]=="!help"){
@@ -109,26 +151,32 @@ client.on('message',function(message){
 				retour += strings["help"][selection][x] + "\n"
 			}
 			message.channel.send(retour);
-		}else if(spl[0][0]=="!capacite" ){
-			retour = strings["error"]["capaNonTrouver"];
-				 if(spl[0][1]=== undefined ){
-					 retour = ""
-					 for (var x in capa) {
-						 retour += capa[x][0] + '\n'
-					 }
-				 }else{
-					 for (var x in capa) {
-						 if(capa[x][0] == spl[0][1] ){
-							 retour = capa[x][0]+": "+capa[x][1]
-						 }
-					 }
-				 }
-			message.channel.send(retour)
-		}else if(spl[0][0]=="!voeu"){
-			voeux[message.author.id] = message.content.replace("!voeu","")
-			sauvgarde(voeux,"voeux")
-		}else if (message.channel.type == "dm" && dialogue[message.author.id] !== undefined){
-			createPersonnage(message)
+		}else if(spl[0][0]=="!personnage"){
+			var tmp = null
+			var compte = 0
+			for (const [key, value] of message.mentions.members) {
+				tmp = key
+				compte++
+			}
+			if (compte==1) {
+				if (message.author.id==tmp || estModo(message.author.id)){
+					message.author.send(afficherFiche(tmp))
+				}else{
+					message.author.send(afficherFichePublic(tmp))
+				}
+			}else if (compte>0) {
+				message.channel.send(strings["error"]["mentionInvalide"])
+			}else if(spl[1]=== undefined){
+				message.channel.send(fiche)
+			}else {
+				let tmp = makeFiche(message,false,message.author.id)
+				if(tmp[0]){
+					message.channel.send(strings["enregistrementROC"])
+					ficheValidation.send(message.author.id + "\n"+ afficherFiche(message.author.id))
+				}else {
+					message.channel.send(tmp[1])
+				}
+			}
 		}
 
 		if (message.channel.type == "dm"){
@@ -137,27 +185,117 @@ client.on('message',function(message){
 	}
 });
 
-function dee(chance){
-	var tmp =  Math.floor(Math.random() * Math.floor(10)) +1;
-	console.log(tmp);
-	console.log(chance+"\n");
-	if (tmp == 10){
-		return strings["echecCritique"]
+
+
+
+function resolveCarac(string){
+	switch (string) {
+		case "for": return "Force"; break;
+		case "agl": return "Agilite"; break;
+		case "mtl": return "Mental"; break;
+		default:
+
 	}
-	if (tmp == 1){
-		return strings["reussiteCritique"]
+}
+
+function afficherTerrain(id){
+	let retour = terrain[id]["Description"]+"\n"
+	retour += "Bonus:"+"\n"
+	retour += "   Force: "+ terrain[id]["Force"]+"\n"
+	retour += "   Agilitée: "+ terrain[id]["Agilitee"]+"\n"
+	retour += "   Mental: "+ terrain[id]["Mental"]+"\n"
+
+	return retour;
+}
+
+function estModo(id) {
+	let retour = false
+	for (var x in modo) {
+		if (modo[x]==id) {
+			retour = true
+		}
 	}
-	if (tmp < chance ){
-		return strings["reussite"]
+	return retour
+}
+
+function afficherFiche(id){
+	let retour = ""
+	for (var i in perso[id]) {
+		retour+= i + ": "+ perso[id][i] + "\n"
 	}
-	return strings["echec"]
+	return retour
+}
+
+function afficherFichePublic(id){
+	let retour = ""
+	let limite = 8
+	for (var i in perso[id]) {
+		if (limite>0){
+			retour+= i + ": "+ perso[id][i] + "\n"
+			limite--
+		}
+	}
+	return retour
+}
+
+function makeFiche(message,validee,id){
+	let spl = message.content.split("<")
+	spl.shift();
+
+	if(spl.length != 11){
+		return [false,strings["error"]["ficheInvalide"]]
+	}
+	let final = {}
+	let tmp = []
+	let verif = ["Nom","Age","Sexe","Espece","Orientation","Description Physique","Description Mental","Autre","Force","Agilite","Mental"]
+	for (var i in spl) {
+		tmp = spl[i].split(">")
+		tmp[1] = tmp[1].trim()
+		if(tmp[0] != verif[i]){
+			return [false,strings["error"]["baliseModif"]]
+		}
+
+		if(tmp[0]=="Force"||tmp[0]=="Agilite"||tmp[0]=="Mental"||tmp[0]=="Age"){
+
+			if(isNaN(tmp[1].replace("\n",""))){
+				return [false,tmp[0]+" "+strings["error"]["doitEtreNbr"]]
+			}else {
+				final[tmp[0]] = Number(tmp[1].replace("\n",""))
+			}
+		}else{
+			final[tmp[0]] = tmp[1].replace("\n","")
+		}
+	}
+
+	if (final["Force"]+final["Agilite"]+final["Mental"] != limitePoints){
+		return [false,strings["error"]["totalTrophautBas"]]
+	}
+	final["validation"]=false
+	final["pv"]=5
+	perso[id] = final
+	sauvgarde(perso,"perso")
+	message.member.roles.remove(roles["RP"])
+	return [true]
+
+}
+
+function quatreDees(){
+	let result = 0
+	for (var i = 0; i < 4; i++) {
+		result += undee()
+	}
+	return result;
+}
+
+function undee(){
+	return Math.floor(Math.random() *3) -1;
 }
 
 function download(url,nom){
 		console.log(url);
     request.get(url)
         .on('error', console.error)
-        .pipe(fs.createWriteStream("dataBase/OC/"+nom));
+        .pipe(fs.createWriteStream("db/OC/"+nom));
 }
 
 function sauvgarde(sauv,nom){
@@ -169,91 +307,21 @@ function sauvgarde(sauv,nom){
 	})
 }
 
-function isInCapa(capAct){
-	for (var x in capa) {
-		if (capa[x][0] == capAct) {
-			return true
+function resetJournalier(){
+	combat = {}
+	for (var x in perso) {
+		perso[x]["pv"]++
+		if(	perso[x]["pv"]>5){
+			perso[x]["pv"] = 5
 		}
 	}
-	return false
+	sauvgarde(perso,"perso")
 }
 
-
-function createPersonnage(message){
-	var etape = dialogue[message.author.id]["etape"]
-	var id = message.author.id
-	switch (etape) {
-		case 0 :
-			dialogue[id]["etape"] +=1
-			break;
-		case 1:
-			dialogue[id]["result"] = {"nom":message.content}
-			dialogue[id]["pointCpt"] = 5
-			dialogue[id]["etape"] +=1
-			break;
-		case 2:
-			dialogue[id]["result"]["espece"] = message.content
-			dialogue[id]["result"]["capacite"] = []
-			dialogue[id]["etape"] +=1
-			break;
-		case 3:
-			var spl = message.content.split(" ")
-			if(Number(spl[1])>dialogue[id]["pointCpt"]){
-				message.author.send(strings["error"]["pcptInsufisant"])
-			}else if (Number(spl[1])>3){
-				message.author.send(strings["error"]["capaTropHaute"])
-			}else if (!isInCapa(spl[0])) {
-				message.author.send(strings["error"]["capaNonTrouver"])
-			}else {
-				dialogue[id]["result"]["capacite"].push([spl[0],spl[1]])
-				dialogue[id]["pointCpt"] -= Number(spl[1])
-				if(dialogue[id]["pointCpt"] == 0){
-					perso[id] = dialogue[id]["result"]
-					sauvgarde(perso,"perso")
-					message.author.send(strings["enregistrementROC"])
-					// message.author.
-					delete dialogue[id]
-				}
-			}
-			break;
-		default:
-
-	}
-	if ((etape == 2 || etape == 3 ) && dialogue[id] !== undefined){
-		message.author.send(strings["personnage"][2].replace("${0}",dialogue[id]["result"]["capacite"].length+1).replace("${1}",dialogue[message.author.id]["pointCpt"]))
-	}else if (dialogue[id] !== undefined){
-		message.author.send(strings["personnage"][etape])
-	}
-	// var imageNom = "none"
-	// if (message.attachments.first() !== undefined){
-	// 	var type = message.attachments.first().filename;
-	//
-	// 	if(type == "jpg"){imageNom=message.author.id+".jpg";}
-	// 	else if (type == "png"){imageNom=message.author.id+".png";}
-	// 	else if (type == "jpeg"){imageNom=message.author.id+".jpeg";}
-	// 	console.log(imageNom);
-	// 	if(imageNom != "none"){download(message.attachments.first().url,imageNom);}
-	// 	else {message.channel.send(strings["error"]["fomatInvalide"])}
-	//
-	// }
-	// result = {
-	// 	nom : spl[1][0],
-	// 	description : message.content.replace(spl[0][0]+" "+spl[0][1],""),
-	// 	image : imageNom
-	// }
-	//
-	// let donnees = JSON.stringify(result)
-	// fs.writeFile('dataBase/OC/'+message.author.id+'.json', donnees, function(erreur) {
-	// 	if (erreur) {
-	// 		console.log(erreur)
-	// 	}else{
-	// 		message.channel.send(strings["enregistrementROC"])
-	// 	}
-	// });
+function leftToEight(){
+    var d = new Date();
+    return (-d + d.setHours(1,0,0,0));
 }
-
-
-
 
 
 client.login(token[0]);

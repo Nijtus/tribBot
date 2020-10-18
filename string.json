@@ -3,35 +3,24 @@
   "depart":"${0} est parti",
   "arrivee":"Bienvenue à toi ${0} \n Je t'invite à lire le règlement",
   "enregistrementROC":"Personnage enregistré",
-  "persoModifReussi":"Personnage modifié",
+  "enregistrementRT":"Terrain créé",
+  "persoValid":"Personnage validé",
   "persoFormat":"```Nom: ${0}\nEspèce: ${1}\nCompétence(s):\n",
   "echecCritique":"Echec critique, les consequences sont désastreuses !" ,
   "reussiteCritique":"Reussite critique, les consequences sont exeptionnellements bonnes !" ,
   "echec":" C'est un echec",
   "reussite":" C'est un succès",
+  "gagnant":"C'est ${0} qui prend l'anvantage malgré ces blessures ! ${1} est grièvement blessé !",
+  "cbt":"Combat enregistré !",
   "help":{
     "general":[
       "!personnage [option]: permet de gérer sont personnage et de voir ceux des autres",
-      "!utilise [modificateur] [nom de la capacité]: permet d'utilier une de vos capacités ",
-      "!voeu [message]",
-      "!help [nom de la commande]: donne des indications sur la commande",
-      "!capacite [nom de capacité]: Donne la liste des capacité. Explique une capacité si le premier paramètre est remplis"
+      "!help [nom de la commande]: donne des indications sur la commande"
     ],
     "personnage":[
       "personnage, option :",
-      "   init : permet de créer son personnage. Ce fait par une série d'instruction",
-      "   modif: permet de modifier le nom ou l'espèce de son perso",
+      "   [sans option]: Vous donne une fiche de personnage vierge qui une fois compléter remplace votre perso actuel",
       "   [une mention]: permet de voir le personnage de la personne mentionné"
-    ],
-    "utilise":[
-      "Permet d'utilier une de vos capacité. Chaque point dans une capacité permet d'avoir un bonus de 10%. Le jet de base est à 50%",
-      "Exemple : '!utilise combat' à 70% de chance de reussite, si vous avez 2 en combat\n",
-      "Le modicateur sert, par example a définir si les circonstance sont bonne pour l'utilisation d'une capacité",
-      "Chaque point dans le modificateur donne +- 10%",
-      "Exemple : Je nage à contre courant, j'utiliserais alors '!utilise -2 nage'"
-    ],
-    "voeu":[
-      "Permet de formuler un voeu aux Astrals... N'a aucune garantie de fonctionner"
     ]
   },
   "personnage":[
@@ -43,17 +32,29 @@
   "error":{
     "general":"Il semblerais qu'un problème soit survenu ...",
     "fomatInvalide":"L'image fournit ne semble pas être du bon format \nElle ne sera pas enregistré",
-    "personnageExistant":"Vous disposez déjà d'un personnage.\nUtilisez !personnage modif [caractéristique]",
+    "personnageExistant":"Vous disposez déjà d'un personnage.\nUtilisez !personnage modif ",
     "pcptInsufisant":"Vous ne disposez pas de suffisament de points de compétence",
+    "ficheInvalide":"Votre fiche est invalide. Veillez faire attention a ne pas toucher aux balises en debut de chaque lignes",
     "pasDePerso":"${0} n'a pas de personnage",
+    "doitEtreNbr":"doit etre un nombre (ne mettez pas de lettres)",
+    "manquefiche":"Veillez mettre la fiche mise à jour en dessous de la commande",
     "vousPasDePerso":"Vous n'avez pas de personnage ! \n'!personnage init' pour en créer un",
     "capaNonTrouver":"La capacité demandé n'existe pas\n'!capacite' pour voir la liste",
-    "capaTropHaute":"Vous ne pouvez mettre que max 3 point dans une seule compétence"
+    "totalTrophautBas":"Vous devez repartir 14 points entre la force, l'agilitée et le mantal.",
+    "pasUnTerrain":"Ce channel n'est pas un terrain",
+    "dejaValidee":"Ce personnage est déjà validé",
+    "mentionInvalide":"Le nombre de mention est invalide",
+    "cbtImpossibleSoiMeme":"Vous ne pouvez pas vous combatre vous meme",
+    "cbtimpossibeTerrain":"Vous ne pouvez pas vous battre ici",
+    "baliseModif":"Une balise a été modifié"
   },
   "commandeInvalide":{
     "general":"Erreur, commande invalide. Essayez :",
     "persoModif":"```!personnage modif [caractéristique a modifier] [modification]```Les caractéristiques modifiable sont : nom, espece",
     "persoComptNonModifiable":"Les compétences ne peuvent pas être modifié. Si il y a une erreur, en referer à un Astral",
-    "utilise":"```!utilise [modificateur] [nom de la capacité]```"
+    "persoCommandeIncomplete":"''!personnage init' ou !personnage modif",
+    "utilise":"```!utilise [modificateur] [nom de la capacité]```",
+    "validation":"```!validation [id]```",
+    "combat":"```!combat [for/agl/mtl]```"
   }
 }

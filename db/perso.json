@@ -1,52 +1,47 @@
 {
-     "280062938776338432": {
-          "nom": "Kaisel",
-          "espece": "Dragon ombre",
-          "capacite": [
-               [
-                    "vol",
-                    "2"
-               ],
-               [
-                    "intimidation",
-                    "2"
-               ],
-               [
-                    "combat",
-                    "1"
-               ]
-          ]
-     },
-     "408680557807927296": {
-          "nom": "Sky",
-          "espece": "renard",
-          "capacite": [
-               [
-                    "combat",
-                    "2"
-               ],
-               [
-                    "athletisme",
-                    "2"
-               ],
-               [
-                    "chasse",
-                    "1"
-               ]
-          ]
-     },
      "387998912558137344": {
-          "nom": "Nijtus",
-          "espece": "Oiseau",
-          "capacite": [
-               [
-                    "medecine",
-                    "3"
-               ],
-               [
-                    "construction",
-                    "2"
-               ]
-          ]
+          "Nom": "Nijtus",
+          "Age": 60,
+          "Sexe": "Male",
+          "Espece": "Drake",
+          "Orientation": "Gay",
+          "Description Physique": "Jaune\"etstegdiuqghdqdkqsg\"",
+          "Description Mental": "Crepe",
+          "Autre": "Collier",
+          "Force": 5,
+          "Agilite": 5,
+          "Mental": 5,
+          "validation": false,
+          "pv": 5
+     },
+     "348786443507728385": {
+          "Nom": "Lorka",
+          "Age": 822,
+          "Sexe": "Male",
+          "Espece": "Dragon",
+          "Orientation": "Pansexuel",
+          "Description Physique": "Dragon noir à bioluminescence bleutée",
+          "Description Mental": "Greu",
+          "Autre": "Fait du feu bleu",
+          "Force": 6,
+          "Agilite": 5,
+          "Mental": 4,
+          "validation": true,
+          "pv": 5
+     },
+     "193662991768616961": {
+          "Nom": "Erika Stash",
+          "Age": 25,
+          "Sexe": "Femelle",
+          "Espece": "Dragon",
+          "Orientation": "Bisexuel",
+          "Description Physique": "De corpulence normale et de taille normal, la dragonne qui a un physique banal quoi",
+          "Description Mental": "Agile et courageuse, mais un peu a coté de la plaque par moments",
+          "Autre": "Elle aime les cookies",
+          "Force": 4,
+          "Agilite": 7,
+          "Mental": 4,
+          "validation": true,
+          "pv": 5
      }
 }
