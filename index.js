@@ -150,6 +150,9 @@ client.on('message',function(message){
 			for (var x in strings["help"][selection]) {
 				retour += strings["help"][selection][x] + "\n"
 			}
+			if (retour=="") {
+				retour = strings["error"]["pasDeCommande"].replace("${0}",selection)
+			}
 			message.channel.send(retour);
 		}else if(spl[0][0]=="!personnage" && message.channel.type == "text"){
 			var tmp = null

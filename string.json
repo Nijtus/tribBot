@@ -29,6 +29,9 @@
       "combat, options :",
       "   [for/agl/mnt]: caractéristique avec lequel vous souhaiter attaquer",
       "   [une mention]: personne à attaquer"
+    ],
+    "terrain":[
+      "Il n'y a pas doption pour cette commande"
     ]
   },
   "personnage":[
@@ -55,7 +58,8 @@
     "cbtImpossibleSoiMeme":"Vous ne pouvez pas vous combatre vous meme",
     "cbtimpossibeTerrain":"Vous ne pouvez pas vous battre ici",
     "baliseModif":"Une balise a été modifié",
-    "chaineVide":"Une des informations n'a pas été complété"
+    "chaineVide":"Une des informations n'a pas été complété",
+    "pasDeCommande":"Aucune commande au nom de ${0} trouvé"
   },
   "commandeInvalide":{
     "general":"Erreur, commande invalide. Essayez :",
