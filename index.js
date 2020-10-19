@@ -151,7 +151,7 @@ client.on('message',function(message){
 				retour += strings["help"][selection][x] + "\n"
 			}
 			message.channel.send(retour);
-		}else if(spl[0][0]=="!personnage"){
+		}else if(spl[0][0]=="!personnage" && message.channel.type == "text"){
 			var tmp = null
 			var compte = 0
 			for (const [key, value] of message.mentions.members) {
@@ -167,6 +167,9 @@ client.on('message',function(message){
 			}else if (compte>0) {
 				message.channel.send(strings["error"]["mentionInvalide"])
 			}else if(spl[1]=== undefined){
+				if (perso[message.author.id]!==undefined){
+					message.author.send(afficherFicheInscriptible(message.author.id))
+				}
 				message.channel.send(fiche)
 			}else {
 				let tmp = makeFiche(message,false,message.author.id)
@@ -226,9 +229,21 @@ function afficherFiche(id){
 	return retour
 }
 
+function afficherFicheInscriptible(id){
+	let retour = "Vous avez déjà un personnage, voici une fiche modifiable:\n```!personnage\n"
+	let limite = 11
+	for (var i in perso[id]) {
+		if (limite>0){
+			retour+="<"+i+">"+ perso[id][i] + "\n"
+			limite--
+		}
+	}
+	retour+="```"
+	return retour
+}
+
 function afficherFichePublic(id){
 	let retour = ""
-	let limite = 8
 	for (var i in perso[id]) {
 		if (limite>0){
 			retour+= i + ": "+ perso[id][i] + "\n"
@@ -251,19 +266,20 @@ function makeFiche(message,validee,id){
 	for (var i in spl) {
 		tmp = spl[i].split(">")
 		tmp[1] = tmp[1].trim()
-		if(tmp[0] != verif[i]){
-			return [false,strings["error"]["baliseModif"]]
+		if(tmp[1].trim()==""){
+			return [false,strings["error"]["chaineVide"]]
 		}
+
 
 		if(tmp[0]=="Force"||tmp[0]=="Agilite"||tmp[0]=="Mental"||tmp[0]=="Age"){
 
 			if(isNaN(tmp[1].replace("\n",""))){
 				return [false,tmp[0]+" "+strings["error"]["doitEtreNbr"]]
 			}else {
-				final[tmp[0]] = Number(tmp[1].replace("\n",""))
+				final[verif[i]] = Number(tmp[1].replace("\n",""))
 			}
 		}else{
-			final[tmp[0]] = tmp[1].replace("\n","")
+			final[verif[i]] = tmp[1].replace("\n","")
 		}
 	}
 

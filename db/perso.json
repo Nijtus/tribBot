@@ -1,16 +1,16 @@
 {
      "387998912558137344": {
           "Nom": "Nijtus",
-          "Age": 60,
+          "Age": 73,
           "Sexe": "Male",
           "Espece": "Drake",
           "Orientation": "Gay",
-          "Description Physique": "Jaune\"etstegdiuqghdqdkqsg\"",
-          "Description Mental": "Crepe",
-          "Autre": "Collier",
-          "Force": 5,
-          "Agilite": 5,
-          "Mental": 5,
+          "Description Physique": "Un drake jaune, au corps allongé, dont les cornes et les griffes sont noires",
+          "Description Mental": "Il cherche un lieux calme ou il pourra vivre pour sa passion, les ruines ancienne",
+          "Autre": "Il porte un collier",
+          "Force": 1,
+          "Agilite": 4,
+          "Mental": 10,
           "validation": false,
           "pv": 5
      },

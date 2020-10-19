@@ -16,12 +16,18 @@
   "help":{
     "general":[
       "!personnage [option]: permet de gérer sont personnage et de voir ceux des autres",
-      "!help [nom de la commande]: donne des indications sur la commande"
+      "!help [nom de la commande]: donne des indications sur la commande",
+      "!combat [for/agl/mnt] [mention] : permet un combat avec la personne mentionner "
     ],
     "personnage":[
       "personnage, option :",
       "   [sans option]: Vous donne une fiche de personnage vierge qui une fois compléter remplace votre perso actuel",
       "   [une mention]: permet de voir le personnage de la personne mentionné"
+    ],
+    "combat":[
+      "combat, options :",
+      "   [for/agl/mnt]: caractéristique avec lequel vous souhaiter attaquer",
+      "   [une mention]: personne à attaquer"
     ]
   },
   "personnage":[
@@ -41,13 +47,14 @@
     "manquefiche":"Veillez mettre la fiche mise à jour en dessous de la commande",
     "vousPasDePerso":"Vous n'avez pas de personnage ! \n'!personnage init' pour en créer un",
     "capaNonTrouver":"La capacité demandé n'existe pas\n'!capacite' pour voir la liste",
-    "totalTrophautBas":"Vous devez repartir 14 points entre la force, l'agilitée et le mantal.",
+    "totalTrophautBas":"Vous devez répartir 15 points entre la force, l'agilité et le mental.",
     "pasUnTerrain":"Ce channel n'est pas un terrain",
     "dejaValidee":"Ce personnage est déjà validé",
     "mentionInvalide":"Le nombre de mention est invalide",
     "cbtImpossibleSoiMeme":"Vous ne pouvez pas vous combatre vous meme",
     "cbtimpossibeTerrain":"Vous ne pouvez pas vous battre ici",
-    "baliseModif":"Une balise a été modifié"
+    "baliseModif":"Une balise a été modifié",
+    "chaineVide":"Une des informations n'a pas été complété"
   },
   "commandeInvalide":{
     "general":"Erreur, commande invalide. Essayez :",
