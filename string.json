@@ -17,7 +17,8 @@
     "general":[
       "!personnage [option]: permet de gérer sont personnage et de voir ceux des autres",
       "!help [nom de la commande]: donne des indications sur la commande",
-      "!combat [for/agl/mnt] [mention] : permet un combat avec la personne mentionner "
+      "!combat [for/agl/mnt] [mention] : permet un combat avec la personne mentionner",
+      "!terrain : permet de voir le terrain ou vous etes"
     ],
     "personnage":[
       "personnage, option :",
