@@ -247,6 +247,7 @@ function afficherFicheInscriptible(id){
 
 function afficherFichePublic(id){
 	let retour = ""
+	let limite = 8
 	for (var i in perso[id]) {
 		if (limite>0){
 			retour+= i + ": "+ perso[id][i] + "\n"
