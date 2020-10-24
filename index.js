@@ -57,137 +57,143 @@ client.on('message',function(message){
 		for (var x in lignes) {
 			spl.push(lignes[x].split(' '))
 		}
-
-		if (spl[0][0]=="!validation" && estModo(message.author.id)) {
-
-			if(spl[0][1]=== undefined){
-				message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["validation"])
-			}else if (perso[spl[0][1]]===undefined) {
-				message.channel.send(strings["error"]["pasDePerso"].replace("${0}",spl[0][1]))
-			}else if (perso[spl[0][1]]["validation"]) {
-				message.channel.send(strings["error"]["dejaValidee"])
-			}else {
-				perso[spl[0][1]]["validation"] = true
-				guild.members.cache.get(spl[0][1]).roles.add(roles["RP"])
-				message.channel.send(strings["persoValid"])
-				sauvgarde(perso,"perso")
-			}
-
-
-
-		}else if (spl[0][0]=="!terrain") {
-			if(spl[0][1]===undefined || !estModo(message.author.id)){
-				if(terrain[message.channel.id]===undefined){
-					message.channel.send(strings["error"]["pasUnTerrain"])
-				}else{
-					message.channel.send(afficherTerrain(message.channel.id))
-				}
-			}else{
-				let nouv = {}
-				nouv["Force"] = Number(spl[0][1])
-				nouv["Agilite"] = Number(spl[0][2])
-				nouv["Mental"] = Number(spl[0][3])
-				nouv["Description"] = lignes[1]
-				terrain[message.channel.id] = nouv
-				sauvgarde(terrain,"terrain")
-				message.channel.send(strings["enregistrementRT"])
-			}
-
-		}else if(spl[0][0]=="!combat"){
-			var tmp = null
-			var compte = 0
-			for (const [key, value] of message.mentions.members) {
-				tmp = key
-				compte++
-			}
-			if (spl[0][1] === undefined || (spl[0][1] != "for" && spl[0][1] != "agl" && spl[0][1]  != "mtl")){
-				message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["combat"])
-			} else if (compte != 1 ){
-				message.channel.send(strings["error"]["mentionInvalide"])
-			} else if (terrain[message.channel.id] ===undefined){
-				message.channel.send(strings["error"]["cbtimpossibeTerrain"])
-			}else if (perso[message.author.id]["pv"]<=2) {
-				message.channel.send(strings["etatfaible"])
-			}else if (combat[message.author.id+message.channel.id] !== undefined) {
-
-				let atck = combat[message.author.id+message.channel.id][0];
-				let deff = message.author.id;
-
-				if (tmp == atck) {
-					let caracD = resolveCarac(spl[0][1])
-					let caracA = resolveCarac(combat[message.author.id+message.channel.id][1])
-
-					let damageDeff = perso[deff][caracD] + terrain[message.channel.id][caracD] + quatreDees()
-					let damageAtck = perso[atck][caracA] + terrain[message.channel.id][caracA] + quatreDees()
-
-					if (damageAtck>damageDeff){
-						perso[deff]["pv"]-=2
-						perso[atck]["pv"]--
-						message.channel.send(strings["gagnant"].replace("${0}",perso[atck]['Nom']).replace("${1}",perso[deff]['Nom']))
-					}else {
-						perso[deff]["pv"]--
-						perso[atck]["pv"]-=2
-						message.channel.send(strings["gagnant"].replace("${0}",perso[deff]['Nom']).replace("${1}",perso[atck]['Nom']))
-					}
-					sauvgarde(perso,"perso")
-
-					delete combat[message.author.id+message.channel.id];
-				}
-
-			}else{
-				combat[tmp+message.channel.id] = [message.author.id,spl[0][1]]
-				message.channel.send(strings["cbt"])
-			}
-
-		}else if (spl[0][0]=="!help"){
-			var retour = ""
-			var selection
-			if (spl[0][1] === undefined){
-				selection = "general"
-			}else{
-				selection = spl[0][1]
-			}
-			for (var x in strings["help"][selection]) {
-				retour += strings["help"][selection][x] + "\n"
-			}
-			if (retour=="") {
-				retour = strings["error"]["pasDeCommande"].replace("${0}",selection)
-			}
-			message.channel.send(retour);
-		}else if(spl[0][0]=="!personnage" && message.channel.type == "text"){
-			var tmp = null
-			var compte = 0
-			for (const [key, value] of message.mentions.members) {
-				tmp = key
-				compte++
-			}
-			if (compte==1) {
-				if (message.author.id==tmp || estModo(message.author.id)){
-					message.author.send(afficherFiche(tmp))
-				}else{
-					message.author.send(afficherFichePublic(tmp))
-				}
-			}else if (compte>0) {
-				message.channel.send(strings["error"]["mentionInvalide"])
-			}else if(spl[1]=== undefined){
-				if (perso[message.author.id]!==undefined){
-					message.author.send(afficherFicheInscriptible(message.author.id))
-				}
-				message.channel.send(fiche)
-			}else {
-				let tmp = makeFiche(message,false,message.author.id)
-				if(tmp[0]){
-					message.channel.send(strings["enregistrementROC"])
-					ficheValidation.send(message.author.id + "\n"+ afficherFiche(message.author.id))
-				}else {
-					message.channel.send(tmp[1])
-				}
+		if (spl[0][0]=="!per" && estModo(message.author.id)) {
+			for (var x in perso) {
+				message.send(afficherFichePublic(perso[x]))
 			}
 		}
-
-		if (message.channel.type == "dm"){
-			console.log(message.author.username+": "+message.content);
-		}
+	// 	if (spl[0][0]=="!validation" && estModo(message.author.id)) {
+	//
+	// 		if(spl[0][1]=== undefined){
+	// 			message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["validation"])
+	// 		}else if (perso[spl[0][1]]===undefined) {
+	// 			message.channel.send(strings["error"]["pasDePerso"].replace("${0}",spl[0][1]))
+	// 		}else if (perso[spl[0][1]]["validation"]) {
+	// 			message.channel.send(strings["error"]["dejaValidee"])
+	// 		}else {
+	// 			perso[spl[0][1]]["validation"] = true
+	// 			guild.members.cache.get(spl[0][1]).roles.add(roles["RP"])
+	// 			message.channel.send(strings["persoValid"])
+	// 			sauvgarde(perso,"perso")
+	// 		}
+	//
+	//
+	//
+	// 	}else if (spl[0][0]=="!terrain") {
+	// 		if(spl[0][1]===undefined || !estModo(message.author.id)){
+	// 			if(terrain[message.channel.id]===undefined){
+	// 				message.channel.send(strings["error"]["pasUnTerrain"])
+	// 			}else{
+	// 				message.channel.send(afficherTerrain(message.channel.id))
+	// 			}
+	// 		}else{
+	// 			let nouv = {}
+	// 			nouv["Force"] = Number(spl[0][1])
+	// 			nouv["Agilite"] = Number(spl[0][2])
+	// 			nouv["Mental"] = Number(spl[0][3])
+	// 			nouv["Description"] = lignes[1]
+	// 			terrain[message.channel.id] = nouv
+	// 			sauvgarde(terrain,"terrain")
+	// 			message.channel.send(strings["enregistrementRT"])
+	// 		}
+	//
+	// 	}else if(spl[0][0]=="!combat"){
+	// 		var tmp = null
+	// 		var compte = 0
+	// 		for (const [key, value] of message.mentions.members) {
+	// 			tmp = key
+	// 			compte++
+	// 		}
+	// 		if (spl[0][1] === undefined || (spl[0][1] != "for" && spl[0][1] != "agl" && spl[0][1]  != "mtl")){
+	// 			message.channel.send(strings["commandeInvalide"]["general"]+strings["commandeInvalide"]["combat"])
+	// 		} else if (compte != 1 ){
+	// 			message.channel.send(strings["error"]["mentionInvalide"])
+	// 		} else if (terrain[message.channel.id] ===undefined){
+	// 			message.channel.send(strings["error"]["cbtimpossibeTerrain"])
+	// 		}else if (perso[message.author.id]["pv"]<=2) {
+	// 			message.channel.send(strings["etatfaible"])
+	// 		}else if (combat[message.author.id+message.channel.id] !== undefined) {
+	//
+	// 			let atck = combat[message.author.id+message.channel.id][0];
+	// 			let deff = message.author.id;
+	//
+	// 			if (tmp == atck) {
+	// 				let caracD = resolveCarac(spl[0][1])
+	// 				let caracA = resolveCarac(combat[message.author.id+message.channel.id][1])
+	//
+	// 				let damageDeff = perso[deff][caracD] + terrain[message.channel.id][caracD] + quatreDees()
+	// 				let damageAtck = perso[atck][caracA] + terrain[message.channel.id][caracA] + quatreDees()
+	//
+	// 				if (damageAtck>damageDeff){
+	// 					perso[deff]["pv"]-=2
+	// 					perso[atck]["pv"]--
+	// 					message.channel.send(strings["gagnant"].replace("${0}",perso[atck]['Nom']).replace("${1}",perso[deff]['Nom']))
+	// 				}else {
+	// 					perso[deff]["pv"]--
+	// 					perso[atck]["pv"]-=2
+	// 					message.channel.send(strings["gagnant"].replace("${0}",perso[deff]['Nom']).replace("${1}",perso[atck]['Nom']))
+	// 				}
+	// 				sauvgarde(perso,"perso")
+	//
+	// 				delete combat[message.author.id+message.channel.id];
+	// 			}
+	//
+	// 		}else{
+	// 			combat[tmp+message.channel.id] = [message.author.id,spl[0][1]]
+	// 			message.channel.send(strings["cbt"])
+	// 		}
+	//
+	// 	}else if (spl[0][0]=="!help"){
+	// 		var retour = ""
+	// 		var selection
+	// 		if (spl[0][1] === undefined){
+	// 			selection = "general"
+	// 		}else{
+	// 			selection = spl[0][1]
+	// 		}
+	// 		for (var x in strings["help"][selection]) {
+	// 			retour += strings["help"][selection][x] + "\n"
+	// 		}
+	// 		if (retour=="") {
+	// 			retour = strings["error"]["pasDeCommande"].replace("${0}",selection)
+	// 		}
+	// 		message.channel.send(retour);
+	// 	}else if(spl[0][0]=="!personnage" && message.channel.type == "text"){
+	// 		var tmp = null
+	// 		var compte = 0
+	// 		for (const [key, value] of message.mentions.members) {
+	// 			tmp = key
+	// 			compte++
+	// 		}
+	// 		if (compte==1) {
+	// 			if (message.author.id==tmp || estModo(message.author.id)){
+	// 				message.author.send(afficherFiche(tmp))
+	// 			}else{
+	// 				message.author.send(afficherFichePublic(tmp))
+	// 			}
+	// 		}else if (compte>0) {
+	// 			message.channel.send(strings["error"]["mentionInvalide"])
+	// 		}else if(spl[1]=== undefined){
+	// 			if (perso[message.author.id]!==undefined){
+	// 				message.author.send(afficherFicheInscriptible(message.author.id))
+	// 			}
+	// 			message.channel.send(fiche)
+	// 		}else {
+	// 			let tmp = makeFiche(message,false,message.author.id)
+	// 			if(tmp[0]){
+	// 				message.channel.send(strings["enregistrementROC"])
+	// 				ficheValidation.send(message.author.id + "\n"+ afficherFiche(message.author.id))
+	// 			}else {
+	// 				message.channel.send(tmp[1])
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	if (message.channel.type == "dm"){
+	// 		console.log(message.author.username+": "+message.content);
+	// 	}
+	// }
+	}
 	}
 });
 
