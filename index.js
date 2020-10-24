@@ -59,7 +59,7 @@ client.on('message',function(message){
 		}
 		if (spl[0][0]=="!per" && estModo(message.author.id)) {
 			for (var x in perso) {
-				message.send(afficherFichePublic(perso[x]))
+				message.channel.send(afficherFichePublic(perso[x]))
 			}
 		}
 		// 	if (spl[0][0]=="!validation" && estModo(message.author.id)) {
